@@ -2,7 +2,7 @@ package com.Controller;
 
 import com.DTO.HotelRequestDTO;
 import com.DTO.HotelResponseDTO;
-import com.Service.HotelService;
+import com.Service.HotelServiceInt;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,9 +12,9 @@ import java.util.List;
 @RequestMapping("/hotels")
 public class HotelController {
 
-    private final HotelService service;
+    private final HotelServiceInt service;
 
-    public HotelController(HotelService service) {
+    public HotelController(HotelServiceInt service) {
         this.service = service;
     }
 
@@ -25,16 +25,16 @@ public class HotelController {
 
     @GetMapping
     public List<HotelResponseDTO> getAll() {
-        return service.getAll();
+        return service.findAll();
     }
 
     @GetMapping("/{id}")
     public HotelResponseDTO getById(@PathVariable Long id) {
-        return service.getById(id);
+        return service.findById(id);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        service.delete(id);
+        service.deleteById(id);
     }
 }
