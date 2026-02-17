@@ -1,13 +1,22 @@
 package com.Service;
 
-import com.Entity.Room;
+import com.DTO.RoomRequestDTO;
+import com.DTO.RoomResponseDTO;
+
 import java.util.List;
 
 public interface RoomServiceInt {
-    List<Room> findAll();
-    Room create(Room employee);
-    Room findById(Long id);
-    Room findByName(String Name);
-    Room replace(Long id, Room newRoom);
+
+    RoomResponseDTO create(RoomRequestDTO dto);
+
+    RoomResponseDTO findById(Long id);
+
+    List<RoomResponseDTO> findAll();
+
+    RoomResponseDTO update(Long id, RoomRequestDTO dto);
+
     void deleteById(Long id);
+
+    RoomResponseDTO assignRoomType(Long roomId, Long roomTypeId);
+
 }

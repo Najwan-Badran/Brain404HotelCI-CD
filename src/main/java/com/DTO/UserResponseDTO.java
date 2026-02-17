@@ -1,5 +1,8 @@
 package com.DTO;
 
+import lombok.Getter;
+
+@Getter
 public class UserResponseDTO {
 
     private Long id;
@@ -14,8 +17,4 @@ public class UserResponseDTO {
         this.role = role;
     }
 
-    public Long getId() { return id; }
-    public String getFullName() { return fullName; }
-    public String getEmail() { return email; }
-    public String getRole() { return role; }
 }

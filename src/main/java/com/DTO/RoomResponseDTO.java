@@ -1,18 +1,22 @@
 package com.DTO;
-import jakarta.validation.constraints.*;
-public class RoomResponseDTO {
-    private Long id;
-    private String roomNumber;
-    private double price;
 
-    public RoomResponseDTO(Long id, String roomNumber, double price) {
+import lombok.Getter;
+
+@Getter
+public class RoomResponseDTO {
+    private final Long id;
+    private String roomNumber;
+    private Integer floor;
+    private Long roomTypeId;
+    private String roomTypeName;
+
+    public RoomResponseDTO(Long id, String roomNumber, Integer floor, Long roomTypeId, String roomTypeName) {
         this.id = id;
         this.roomNumber = roomNumber;
-        this.price = price;
-    }
+        this.floor = floor;
+        this.roomTypeId = roomTypeId;
+        this.roomTypeName = roomTypeName;
 
-    public Long getId() {return id;}
-    public String getRoomNumber() {return roomNumber;}
-    public double getPrice() {return price;}
+    }
 
 }
