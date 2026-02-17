@@ -2,14 +2,17 @@ package com.Mapper;
 
 import com.DTO.*;
 import com.Entity.Room;
+import com.Entity.RoomType;
 
 public class RoomMapper {
     private RoomMapper() {}
 
-    public static Room toEntity(RoomRequestDTO dto) {
+    public static Room toEntity(RoomRequestDTO dto, RoomType roomType) {
         Room e = new Room();
         e.setRoomNumber(dto.getRoomNumber());
-        e.setPrice(dto.getPrice());
+        e.setFloor(dto.getFloor());
+        e.setRoomType(roomType);
+
         return e;
     }
 
@@ -17,7 +20,10 @@ public class RoomMapper {
         return new RoomResponseDTO(
                 e.getId(),
                 e.getRoomNumber(),
-                e.getPrice()
+                e.getFloor(),
+                e.getRoomType().getId(),
+                e.getRoomType().getName()
+
         );
     }
 }

@@ -1,26 +1,25 @@
 package com.DTO;
+import com.Entity.RoomType;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class RoomRequestDTO {
-    @NotBlank
+    @NotBlank(message = "Room number cannot be empty")
+    @Size(min = 1, max = 100, message = "Room number must be between 1 and 100")
     private String roomNumber;
-    @NotBlank
-    private double price;
+
+    @NotNull(message = "Floor cannot be null")
+    @PositiveOrZero
+    private Integer floor;
+
+    @NotNull(message = "Room type ID cannot be null")
+    @PositiveOrZero
+    private Long roomTypeId;
 
 
-    public String getRoomNumber() {
-        return roomNumber;
-    }
 
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
-    }
 
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
 }
