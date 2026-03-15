@@ -43,8 +43,9 @@ public class RoomType {
 
     private String imagePath;
 
-    @OneToMany
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL)
     private List<Room> rooms;
+
 
     // CONSTRUCTORS --------------------------
     public RoomType() {}

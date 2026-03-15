@@ -21,13 +21,13 @@ public class AmenityServiceImpl implements AmenityService {
     @Override
     public AmenityResponseDTO create(AmenityRequestDTO requestDTO) {
 
-        String normalizedName = normalize(requestDTO.getName());
+        String name = normalize(requestDTO.getName());
 
-        if (amenityRepository.existsByNameInsensitive(normalizedName)) {
-            throw new AmenityAlreadyExistsException(normalizedName);
+        if (amenityRepository.existsByNameInsensitive(name)) {
+            throw new AmenityAlreadyExistsException(name);
         }
 
-        requestDTO.setName(normalizedName);
+        requestDTO.setName(name);
 
         Amenity amenity = amenityMapper.toEntity(requestDTO);
         Amenity saved = amenityRepository.save(amenity);
@@ -68,18 +68,17 @@ public class AmenityServiceImpl implements AmenityService {
         Amenity amenity = amenityRepository.findById(id)
                 .orElseThrow(() -> new AmenityNotFoundException(id));
 
-        String normalizedName = normalize(requestDTO.getName());
+        String name = normalize(requestDTO.getName());
 
-        if (amenityRepository.existsByNameInsensitiveAndIdNot(normalizedName, id)) {
-            throw new AmenityAlreadyExistsException(normalizedName);
+        if (amenityRepository.existsByNameInsensitiveAndIdNot(name, id)) {
+            throw new AmenityAlreadyExistsException(name);
         }
 
-        requestDTO.setName(normalizedName);
+        requestDTO.setName(name);
 
         amenityMapper.updateEntity(amenity, requestDTO);
-        Amenity saved = amenityRepository.save(amenity);
 
-        return amenityMapper.toResponseDTO(saved);
+        return amenityMapper.toResponseDTO(amenity);
     }
 
     @Override
@@ -106,10 +105,15 @@ public class AmenityServiceImpl implements AmenityService {
         amenity.setIsActive(true);
     }
 
+    /* =========================
+       PRIVATE VALIDATION
+       ========================= */
     private String normalize(String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Amenity name cannot be null");
+
+        if (name == null || name.isBlank()) {
+            throw new AmenityValidationException("Amenity name cannot be empty");
         }
+
         return name.trim();
     }
 }

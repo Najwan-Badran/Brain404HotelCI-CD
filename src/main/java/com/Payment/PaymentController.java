@@ -1,5 +1,6 @@
 package com.Payment;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -14,8 +15,8 @@ public class PaymentController {
     public PaymentController(PaymentService service) {
         this.service = service;
     }
-
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<PaymentResponseDTO> create(
             @Valid @RequestBody PaymentRequestDTO dto) {
 
@@ -33,7 +34,7 @@ public class PaymentController {
     }
 
     @GetMapping("/booking/{bookingId}")
-    public List<PaymentResponseDTO> getByBooking(@PathVariable Long bookingId) {
+    public PaymentResponseDTO getByBooking(@PathVariable Long bookingId) {
         return service.findByBooking(bookingId);
     }
 }

@@ -1,43 +1,36 @@
 package com.Amenity;
-
 import org.springframework.stereotype.Component;
-
 @Component
 public class AmenityMapper {
-
+    /* =========================
+       CREATE
+       ========================= */
     public Amenity toEntity(AmenityRequestDTO dto) {
-
         Amenity amenity = new Amenity();
-
-        amenity.setName(dto.getName() == null ? null : dto.getName().trim());
-        amenity.setDescription(dto.getDescription() == null ? null : dto.getDescription().trim());
-
-        if (dto.getIsActive() == null) {
-            amenity.setIsActive(true);
-        } else {
-            amenity.setIsActive(dto.getIsActive());
-        }
-
+        amenity.setName(safeTrim(dto.getName()));
+        amenity.setDescription(safeTrim(dto.getDescription()));
+        // Always default to true on create
+        amenity.setIsActive(true);
         return amenity;
     }
-
+    /* =========================
+       UPDATE (Partial Update Safe)
+       ========================= */
     public void updateEntity(Amenity amenity, AmenityRequestDTO dto) {
-
         if (dto.getName() != null) {
-            amenity.setName(dto.getName().trim());
+            amenity.setName(safeTrim(dto.getName()));
         }
-
         if (dto.getDescription() != null) {
-            amenity.setDescription(dto.getDescription().trim());
-        } else {
-            amenity.setDescription(null);
+            amenity.setDescription(safeTrim(dto.getDescription()));
         }
-
+        // Only update isActive if explicitly sent
         if (dto.getIsActive() != null) {
             amenity.setIsActive(dto.getIsActive());
         }
     }
-
+    /* =========================
+       ENTITY → RESPONSE DTO
+       ========================= */
     public AmenityResponseDTO toResponseDTO(Amenity amenity) {
         return new AmenityResponseDTO(
                 amenity.getId(),
@@ -45,5 +38,11 @@ public class AmenityMapper {
                 amenity.getDescription(),
                 amenity.getIsActive()
         );
+    }
+    /* =========================
+       Helper
+       ========================= */
+    private String safeTrim(String value) {
+        return value == null ? null : value.trim();
     }
 }

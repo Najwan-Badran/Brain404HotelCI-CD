@@ -18,9 +18,8 @@ public class Payment {
     private PaymentStatus status;
 
     private LocalDateTime createdAt;
-
-    @ManyToOne
-    @JoinColumn(name = "booking_id")
+    @OneToOne
+    @JoinColumn(name = "booking_id", nullable = false, unique = true)
     private Booking booking;
 
     // ===== GETTERS & SETTERS =====
