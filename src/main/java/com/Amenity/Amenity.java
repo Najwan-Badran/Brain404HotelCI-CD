@@ -11,10 +11,11 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
+@Table(name = "amenities")
 public class Amenity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true, length = 80)
@@ -26,14 +27,13 @@ public class Amenity {
     @Column(nullable = false)
     private Boolean isActive = true;
 
-    @ManyToMany(mappedBy = "amenities")
+    @ManyToMany(mappedBy = "amenities", fetch = FetchType.LAZY)
     private Set<Hotel> hotels = new HashSet<>();
 
-    @ManyToMany(mappedBy = "amenities")
+    @ManyToMany(mappedBy = "amenities", fetch = FetchType.LAZY)
     private Set<Room> rooms = new HashSet<>();
 
-    public Amenity() {
-    }
+    public Amenity() {}
 
     public Amenity(Long id, String name, String description, Boolean isActive) {
         this.id = id;
@@ -44,8 +44,7 @@ public class Amenity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Amenity amenity = (Amenity) o;
+        if (!(o instanceof Amenity amenity)) return false;
         return id != null && id.equals(amenity.id);
     }
 

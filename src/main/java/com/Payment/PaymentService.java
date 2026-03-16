@@ -1,6 +1,5 @@
 package com.Payment;
 
-import java.util.List;
 
 public interface PaymentService {
 
@@ -10,5 +9,5 @@ public interface PaymentService {
 
     PaymentResponseDTO cancel(Long paymentId);
 
-    List<PaymentResponseDTO> findByBooking(Long bookingId);
+    PaymentResponseDTO findByBooking(Long bookingId);
 }

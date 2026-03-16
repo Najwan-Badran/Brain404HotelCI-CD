@@ -14,7 +14,7 @@ import java.util.Set;
 @Getter
 @Entity
 public class Room {
-
+    private Double averageRating;
     @Id
     @GeneratedValue
     private Long id;
@@ -29,7 +29,8 @@ public class Room {
     @Column(nullable = false)
     @PositiveOrZero
     private Integer floor;
-
+    @Column(nullable = false)
+    private Integer reviewCount = 0;
     @ManyToOne
     @JoinColumn(name = "hotel_id", nullable = false)
     private Hotel hotel;
