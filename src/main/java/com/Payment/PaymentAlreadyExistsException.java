@@ -13,3 +13,4 @@ public class PaymentAlreadyExistsException extends RuntimeException {
         super(message, cause);
     }
 }
+
