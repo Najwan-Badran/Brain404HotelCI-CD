@@ -505,7 +505,7 @@ All list endpoints support pagination:
 
 ```json
 {
-  "content": [...],
+  "content": ["..."],
   "pageable": {
     "pageNumber": 0,
     "pageSize": 10
