@@ -18,4 +18,6 @@ public interface ImageService {
     List<ImageResponseDTO> getByEntity(ImageEntityType entityType, Long entityId);
 
     ImageResponseDTO setPrimary(Long imageId);
+
+    void deleteByEntity(ImageEntityType entityType, Long entityId);
 }

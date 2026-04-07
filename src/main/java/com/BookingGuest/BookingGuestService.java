@@ -15,4 +15,6 @@ public interface BookingGuestService {
     BookingGuestResponseDTO update(Long bookingId, Long guestId, BookingGuestRequestDTO requestDTO);
 
     void delete(Long bookingId, Long guestId);
+
+    void deleteAllByBookingId(Long bookingId);
 }

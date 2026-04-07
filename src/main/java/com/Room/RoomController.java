@@ -145,4 +145,22 @@ public class RoomController {
     ) {
         return roomService.findAvailableRooms(checkInDate, checkOutDate, guests);
     }
+
+    /**
+     * Get room by room number
+     */
+    @GetMapping("/number/{roomNumber}")
+    @Operation(summary = "Get room by number", description = "Retrieve a room by its room number")
+    public RoomResponseDTO getByRoomNumber(@PathVariable String roomNumber) {
+        return roomService.findByRoomNumber(roomNumber);
+    }
+
+    /**
+     * Get active rooms by hotel
+     */
+    @GetMapping("/hotel/{hotelId}/active")
+    @Operation(summary = "Get active rooms by hotel", description = "Retrieve all active rooms for a hotel")
+    public List<RoomResponseDTO> getActiveByHotel(@PathVariable Long hotelId) {
+        return roomService.findActiveByHotelId(hotelId);
+    }
 }

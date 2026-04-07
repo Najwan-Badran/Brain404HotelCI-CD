@@ -138,6 +138,26 @@ class RoomTypeServiceTest {
             assertNotNull(result);
             assertTrue(result.isEmpty());
         }
+
+        @Test
+        @DisplayName("Should find room type by name")
+        void shouldFindByName() {
+            when(roomTypeRepository.findByName("Deluxe Suite")).thenReturn(Optional.of(roomType));
+            when(roomTypeMapper.toDto(roomType)).thenReturn(responseDTO);
+
+            RoomTypeResponseDTO result = roomTypeService.findByName("Deluxe Suite");
+
+            assertNotNull(result);
+            assertEquals("Deluxe Suite", result.getName());
+        }
+
+        @Test
+        @DisplayName("Should throw exception when name not found")
+        void shouldThrowExceptionWhenNameNotFound() {
+            when(roomTypeRepository.findByName("Unknown Type")).thenReturn(Optional.empty());
+
+            assertThrows(RoomTypeNotFoundException.class, () -> roomTypeService.findByName("Unknown Type"));
+        }
     }
 
     @Nested

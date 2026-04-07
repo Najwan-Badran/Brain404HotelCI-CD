@@ -59,4 +59,11 @@ public class BookingGuestController {
                             @PathVariable Long guestId) {
         bookingGuestService.delete(bookingId, guestId);
     }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    public void deleteAllGuests(@PathVariable Long bookingId) {
+        bookingGuestService.deleteAllByBookingId(bookingId);
+    }
 }

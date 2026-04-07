@@ -90,6 +90,11 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.countByUserIdAndReadFalse(userId);
     }
 
+    @Override
+    public void deleteAllByUser(Long userId) {
+        notificationRepository.deleteAllByUserId(userId);
+    }
+
     // ==========================================================
     // Auto-generation methods for Booking events
     // ==========================================================

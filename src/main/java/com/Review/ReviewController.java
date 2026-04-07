@@ -129,6 +129,57 @@ public class ReviewController {
         return Map.of("roomId", roomId, "averageRating", rating != null ? rating : 0.0);
     }
 
+    @GetMapping("/hotel/{hotelId}/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "Get all reviews by hotel", description = "Retrieve all reviews for a hotel including unapproved (Admin/Manager only)")
+    public Page<ReviewResponseDTO> getAllByHotel(
+            @PathVariable Long hotelId,
+            Pageable pageable) {
+        return reviewService.getAllByHotel(hotelId, pageable);
+    }
+
+    @GetMapping("/room/{roomId}/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "Get all reviews by room", description = "Retrieve all reviews for a room including unapproved (Admin/Manager only)")
+    public Page<ReviewResponseDTO> getAllByRoom(
+            @PathVariable Long roomId,
+            Pageable pageable) {
+        return reviewService.getAllByRoom(roomId, pageable);
+    }
+
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "Get reviews by user", description = "Retrieve all reviews by a specific user (Admin/Manager only)")
+    public Page<ReviewResponseDTO> getByUser(
+            @PathVariable Long userId,
+            Pageable pageable) {
+        return reviewService.getByUserPaginated(userId, pageable);
+    }
+
+    @GetMapping("/hotel/{hotelId}/count")
+    @Operation(summary = "Get review count", description = "Get count of approved reviews for a hotel")
+    public Map<String, Object> getReviewCount(@PathVariable Long hotelId) {
+        Long count = reviewService.countApprovedByHotel(hotelId);
+        Double rating = reviewService.getAverageRating(hotelId);
+        return Map.of(
+                "hotelId", hotelId,
+                "reviewCount", count != null ? count : 0,
+                "averageRating", rating != null ? rating : 0.0
+        );
+    }
+
+    @GetMapping("/room/{roomId}/count")
+    @Operation(summary = "Get room review count", description = "Get count of approved reviews for a room")
+    public Map<String, Object> getRoomReviewCount(@PathVariable Long roomId) {
+        Long count = reviewService.countApprovedByRoom(roomId);
+        Double rating = reviewService.getAverageRatingByRoom(roomId);
+        return Map.of(
+                "roomId", roomId,
+                "reviewCount", count != null ? count : 0,
+                "averageRating", rating != null ? rating : 0.0
+        );
+    }
+
     private Long getUserId(Authentication authentication) {
         String username = authentication.getName();
         return userRepository.findByUsername(username)

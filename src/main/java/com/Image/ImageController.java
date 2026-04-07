@@ -67,4 +67,14 @@ public class ImageController {
     public ImageResponseDTO setPrimary(@PathVariable Long id) {
         return imageService.setPrimary(id);
     }
+
+    @DeleteMapping("/entity")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    @Operation(summary = "Delete all images for entity", description = "Delete all images associated with a specific entity")
+    public ResponseEntity<Void> deleteByEntity(
+            @RequestParam ImageEntityType entityType,
+            @RequestParam Long entityId) {
+        imageService.deleteByEntity(entityType, entityId);
+        return ResponseEntity.noContent().build();
+    }
 }

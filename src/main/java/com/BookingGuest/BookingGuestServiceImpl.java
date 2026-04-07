@@ -123,6 +123,12 @@ public class BookingGuestServiceImpl implements BookingGuestService {
         bookingGuestRepository.delete(entity);
     }
 
+    @Override
+    public void deleteAllByBookingId(Long bookingId) {
+        ensureBookingExists(bookingId);
+        bookingGuestRepository.deleteByBookingId(bookingId);
+    }
+
     private void ensureBookingExists(Long bookingId) {
         if (!bookingRepository.existsById(bookingId)) {
             throw new BookingNotFoundException(bookingId);

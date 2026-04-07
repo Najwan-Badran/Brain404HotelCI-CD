@@ -221,4 +221,37 @@ public class ReviewServiceImpl implements ReviewService {
     public Double getAverageRatingByRoom(Long roomId) {
         return reviewRepository.getAverageRatingByRoomId(roomId);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReviewResponseDTO> getAllByHotel(Long hotelId, Pageable pageable) {
+        return reviewRepository.findByHotelId(hotelId, pageable)
+                .map(reviewMapper::toResponseDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReviewResponseDTO> getAllByRoom(Long roomId, Pageable pageable) {
+        return reviewRepository.findByRoomId(roomId, pageable)
+                .map(reviewMapper::toResponseDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ReviewResponseDTO> getByUserPaginated(Long userId, Pageable pageable) {
+        return reviewRepository.findByUserId(userId, pageable)
+                .map(reviewMapper::toResponseDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long countApprovedByHotel(Long hotelId) {
+        return reviewRepository.countApprovedReviewsByHotelId(hotelId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long countApprovedByRoom(Long roomId) {
+        return reviewRepository.countApprovedReviewsByRoomId(roomId);
+    }
 }

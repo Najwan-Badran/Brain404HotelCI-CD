@@ -235,11 +235,66 @@ mvn clean install
 
 ### 5. Run the Application
 
+**Empty Mode (default)** - Only schema, no data:
 ```bash
 mvn spring-boot:run
 ```
 
+**Demo Mode** - Schema with realistic fake data:
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=demo
+```
+
+Or set environment variable:
+```bash
+# Linux/macOS
+export SPRING_PROFILES_ACTIVE=demo
+
+# Windows
+set SPRING_PROFILES_ACTIVE=demo
+```
+
 The application will start on `http://localhost:8080`
+
+### Database Initialization Profiles
+
+| Profile | Description |
+|---------|-------------|
+| `empty` (default) | Creates schema only, no seed data. Admin user created on first run. |
+| `demo` | Creates schema + realistic demo data (hotels, rooms, bookings, users, etc.) |
+| `test` | H2 in-memory database for testing |
+
+### Default Admin Credentials
+
+On first run, an admin user is automatically created:
+
+| Field | Value |
+|-------|-------|
+| Username | `admin` |
+| Password | `Admin@1234` |
+| Email | `admin@hotel.com` |
+| Roles | ADMIN, USER, MANAGER |
+
+**Important:** Change the admin password after first login in production!
+
+### Demo Data (when using `demo` profile)
+
+The demo profile seeds the database with realistic test data:
+
+| Entity | Count | Description |
+|--------|-------|-------------|
+| Addresses | 25 | 10 hotel addresses, 15 user billing addresses |
+| Amenities | 20 | WiFi, Pool, Spa, Gym, Restaurant, etc. |
+| Room Types | 10 | Standard Single to Penthouse |
+| Hotels | 10 | Worldwide locations (NYC, Miami, London, Tokyo, etc.) |
+| Rooms | ~440 | Distributed across all hotels |
+| Users | 15 | Demo users with ROLE_USER |
+| Bookings | 50 | Various statuses (confirmed, pending, cancelled) |
+| Booking Guests | ~100 | Guest details for bookings |
+| Payments | 50 | One per booking |
+| Reviews | ~35 | User reviews for hotels |
+
+Demo users have the password: `Password@123`
 
 ## API Documentation
 
@@ -250,26 +305,45 @@ Access the interactive API documentation at:
 http://localhost:8080/swagger-ui.html
 ```
 
+### Postman Collection
+
+A comprehensive Postman collection is included in the project root:
+
+```
+Brain404HotelPostman.json
+```
+
+**Features:**
+- All 16 modules with complete endpoint coverage
+- Success and error scenario folders for each module
+- Auto-save tokens on login via test scripts
+- Collection variables for `baseUrl`, `accessToken`, `refreshToken`
+
+**To use:**
+1. Import `Brain404HotelPostman.json` into Postman
+2. Run "Login - Admin" first to populate the access token
+3. All subsequent requests will use the saved token
+
 ### API Endpoints Overview
 
 | Controller | Base Path | Description |
 |------------|-----------|-------------|
-| AuthController | `/api/auth` | Authentication (login, register, refresh) |
-| UserController | `/api/users` | User management |
-| HotelController | `/api/hotels` | Hotel CRUD and search |
-| RoomController | `/api/rooms` | Room management |
-| RoomTypeController | `/api/room-types` | Room type configuration |
-| BookingController | `/api/bookings` | Booking management |
-| PaymentController | `/api/payments` | Payment processing |
-| ReviewController | `/api/reviews` | Review management |
-| NotificationController | `/api/notifications` | User notifications |
-| AmenityController | `/api/amenities` | Amenity management |
-| RoleController | `/api/roles` | Role management |
-| StatsController | `/api/stats` | Analytics endpoints |
-| AddressController | `/api/addresses` | Address management |
-| ImageController | `/api/images` | Image management |
-| RoomAvailabilityController | `/api/room-availability` | Availability management |
-| PaymentTransactionController | `/api/payment-transactions` | Transaction history |
+| AuthController | `/api/auth` | Authentication (login, register, refresh, logout, password reset) |
+| UserController | `/users` | User management, profile, bookings, reviews |
+| HotelController | `/hotels` | Hotel CRUD, search, amenities |
+| RoomController | `/rooms` | Room management, search, availability |
+| RoomTypeController | `/room-types` | Room type configuration |
+| BookingController | `/bookings` | Booking lifecycle (confirm, check-in/out, cancel) |
+| BookingGuestController | `/bookings/{id}/guests` | Guest management for bookings |
+| PaymentController | `/payments` | Payment processing, refunds |
+| ReviewController | `/reviews` | Reviews, ratings, approval workflow |
+| NotificationController | `/notifications` | User notifications, read status |
+| AmenityController | `/amenities` | Amenity management |
+| RoleController | `/role` | Role management (Admin only) |
+| StatsController | `/stats` | Analytics and dashboard |
+| AddressController | `/api/addresses` | Address management, search |
+| ImageController | `/images` | Image management |
+| RoomAvailabilityController | `/room-availability` | Availability scheduling |
 
 ### Authentication Endpoints
 
@@ -326,6 +400,34 @@ curl -X POST http://localhost:8080/api/bookings \
   }'
 ```
 
+**Create Address (Admin):**
+```bash
+curl -X POST http://localhost:8080/api/addresses \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "addressType": "HOTEL",
+    "street": "123 Main Street",
+    "street2": "Suite 100",
+    "city": "New York",
+    "state": "NY",
+    "country": "USA",
+    "postalCode": "10001",
+    "latitude": 40.7128,
+    "longitude": -74.0060
+  }'
+```
+
+**Search Addresses:**
+```bash
+curl "http://localhost:8080/api/addresses/search?city=New%20York&country=USA"
+```
+
+**Get Addresses by Type:**
+```bash
+curl "http://localhost:8080/api/addresses/type/HOTEL"
+```
+
 ## Security
 
 ### Authentication Flow
@@ -374,8 +476,14 @@ mvn test
 # Run specific test class
 mvn test -Dtest=HotelServiceTest
 
+# Run tests for a specific package
+mvn test "-Dtest=com.Address.*"
+
 # Run with coverage report
 mvn test jacoco:report
+
+# Clean build and test
+mvn clean test
 ```
 
 ### Test Configuration
@@ -399,7 +507,7 @@ spring.jpa.hibernate.ddl-auto=create-drop
 
 ### Test Coverage
 
-The test suite covers:
+The test suite includes **457+ tests** covering:
 - Service layer business logic
 - Controller endpoints with MockMvc
 - Repository custom queries
@@ -407,6 +515,11 @@ The test suite covers:
 - Custom validators
 - Exception handling
 - Security filters
+- Database initialization profiles
+- Address management operations
+- Review statistics and admin functions
+- Notification management
+- Room availability operations
 
 ## Project Structure
 
@@ -442,12 +555,13 @@ src/
 │       └── application-test.properties
 └── test/
     └── java/com/
+        ├── Address/           # Address service tests
         ├── Booking/           # Booking tests
         ├── Hotel/             # Hotel tests
         ├── Security/          # Security tests
         ├── User/              # User tests
         ├── Validation/        # Validator tests
-        ├── config/            # Test configuration
+        ├── config/            # Profile and initialization tests
         └── GlobalExceptionHandlerTest.java
 ```
 
@@ -483,7 +597,7 @@ The application uses a global exception handler that returns standardized error 
 
 ### Custom Exceptions
 
-- `UserNotFoundException`, `HotelNotFoundException`, `BookingNotFoundException`, etc.
+- `UserNotFoundException`, `HotelNotFoundException`, `BookingNotFoundException`, `AddressNotFoundException`, etc.
 - `UserAlreadyExistsException`, `HotelAlreadyExistsException`, etc.
 - `BookingBadRequestException`, `RoleBadRequestException`, etc.
 - `RefreshTokenException`
