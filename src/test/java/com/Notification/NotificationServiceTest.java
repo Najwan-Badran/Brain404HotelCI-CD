@@ -242,6 +242,14 @@ class NotificationServiceTest {
 
             assertThrows(NotificationNotFoundException.class, () -> notificationService.delete(1L, 999L));
         }
+
+        @Test
+        @DisplayName("Should delete all notifications for user")
+        void shouldDeleteAllByUser() {
+            notificationService.deleteAllByUser(1L);
+
+            verify(notificationRepository).deleteAllByUserId(1L);
+        }
     }
 
     @Nested

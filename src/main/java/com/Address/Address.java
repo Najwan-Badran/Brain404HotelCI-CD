@@ -9,15 +9,23 @@ import java.util.Objects;
 
 /**
  * Address entity for storing addresses.
- * Can be used for hotels, users billing addresses, etc.
+ * Used for hotels, users billing addresses, etc.
  */
 @Entity
-@Table(name = "addresses")
+@Table(name = "addresses", indexes = {
+        @Index(name = "idx_address_city", columnList = "city"),
+        @Index(name = "idx_address_country", columnList = "country"),
+        @Index(name = "idx_address_type", columnList = "address_type")
+})
 public class Address extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "address_type", length = 20)
+    private AddressType addressType = AddressType.OTHER;
 
     @NotBlank(message = "Street is required")
     @Size(max = 200, message = "Street must not exceed 200 characters")
@@ -52,6 +60,9 @@ public class Address extends BaseEntity {
     @Column
     private Double longitude;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     // Constructors
     public Address() {}
 
@@ -61,6 +72,14 @@ public class Address extends BaseEntity {
         this.country = country;
     }
 
+    public Address(String street, String city, String state, String country, String postalCode) {
+        this.street = street;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+        this.postalCode = postalCode;
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -68,6 +87,14 @@ public class Address extends BaseEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public AddressType getAddressType() {
+        return addressType;
+    }
+
+    public void setAddressType(AddressType addressType) {
+        this.addressType = addressType;
     }
 
     public String getStreet() {
@@ -134,6 +161,14 @@ public class Address extends BaseEntity {
         this.longitude = longitude;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public String getFullAddress() {
         StringBuilder sb = new StringBuilder();
         sb.append(street);
@@ -168,6 +203,7 @@ public class Address extends BaseEntity {
     public String toString() {
         return "Address{" +
                 "id=" + id +
+                ", addressType=" + addressType +
                 ", city='" + city + '\'' +
                 ", country='" + country + '\'' +
                 '}';

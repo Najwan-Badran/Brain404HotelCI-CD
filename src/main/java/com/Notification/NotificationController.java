@@ -106,6 +106,14 @@ public class NotificationController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/all")
+    @Operation(summary = "Delete all notifications", description = "Delete all notifications for current user")
+    public ResponseEntity<Void> deleteAllNotifications(Authentication authentication) {
+        Long userId = getCurrentUserId(authentication);
+        notificationService.deleteAllByUser(userId);
+        return ResponseEntity.noContent().build();
+    }
+
     private Long getCurrentUserId(Authentication authentication) {
         if (authentication == null) {
             throw new UserNotFoundException("Not authenticated");

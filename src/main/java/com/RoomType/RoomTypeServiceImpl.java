@@ -66,4 +66,12 @@ public class RoomTypeServiceImpl implements RoomTypeServiceInt {
         }
         repository.deleteById(id);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RoomTypeResponseDTO findByName(String name) {
+        RoomType roomType = repository.findByName(name)
+                .orElseThrow(() -> new RoomTypeNotFoundException("Room type not found with name: " + name));
+        return mapper.toDto(roomType);
+    }
 }

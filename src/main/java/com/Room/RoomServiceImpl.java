@@ -208,4 +208,24 @@ public class RoomServiceImpl implements RoomServiceInt {
             throw new RoomBadRequestException("Check-out date must be after check-in date");
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RoomResponseDTO findByRoomNumber(String roomNumber) {
+        Room room = roomRepository.findByRoomNumber(roomNumber)
+                .orElseThrow(() -> new RoomNotFoundException(roomNumber));
+        return RoomMapper.toDto(room);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RoomResponseDTO> findActiveByHotelId(Long hotelId) {
+        if (!hotelRepository.existsById(hotelId)) {
+            throw new HotelNotFoundException(hotelId);
+        }
+        return roomRepository.findByHotelIdAndActiveTrue(hotelId)
+                .stream()
+                .map(RoomMapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

@@ -70,7 +70,10 @@ public class GlobalExceptionHandler {
             com.BookingGuest.BookingGuestNotFoundException.class,
 
             // NOTIFICATION
-            com.Notification.NotificationNotFoundException.class
+            com.Notification.NotificationNotFoundException.class,
+
+            // ADDRESS
+            com.Address.AddressNotFoundException.class
     })
     public ResponseEntity<ApiError> handleNotFound(RuntimeException ex,
                                                    HttpServletRequest request) {

@@ -88,4 +88,13 @@ public class RoomTypeController {
         roomTypeService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Get room type by name (public access)
+     */
+    @GetMapping("/name/{name}")
+    @Operation(summary = "Get room type by name", description = "Retrieve a specific room type by name")
+    public RoomTypeResponseDTO getByName(@PathVariable String name) {
+        return roomTypeService.findByName(name);
+    }
 }

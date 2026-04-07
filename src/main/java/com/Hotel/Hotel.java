@@ -1,5 +1,6 @@
 package com.Hotel;
 
+import com.Address.Address;
 import com.Amenity.Amenity;
 import com.Common.BaseEntity;
 import com.Room.Room;
@@ -67,6 +68,10 @@ public class Hotel extends BaseEntity {
     @PositiveOrZero(message = "Number of floors must be zero or positive")
     @Column(name = "number_of_floors")
     private Integer numberOfFloors;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id")
+    private Address fullAddress;
 
     @JsonIgnore
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -177,6 +182,14 @@ public class Hotel extends BaseEntity {
 
     public void setNumberOfFloors(Integer numberOfFloors) {
         this.numberOfFloors = numberOfFloors;
+    }
+
+    public Address getFullAddress() {
+        return fullAddress;
+    }
+
+    public void setFullAddress(Address fullAddress) {
+        this.fullAddress = fullAddress;
     }
 
     public Set<Room> getRooms() {

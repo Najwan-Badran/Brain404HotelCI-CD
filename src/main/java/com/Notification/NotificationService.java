@@ -24,6 +24,8 @@ public interface NotificationService {
 
     long getUnreadCount(Long userId);
 
+    void deleteAllByUser(Long userId);
+
     // Auto-generation methods (called by other services)
     void notifyBookingCreated(Booking booking);
 

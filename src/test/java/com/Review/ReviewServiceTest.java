@@ -432,4 +432,106 @@ class ReviewServiceTest {
             assertEquals(4.2, result);
         }
     }
+
+    @Nested
+    @DisplayName("Admin Get All Reviews Tests")
+    class AdminGetAllTests {
+
+        @Test
+        @DisplayName("Should get all reviews by hotel including unapproved")
+        void shouldGetAllByHotel() {
+            Review unapprovedReview = new Review();
+            unapprovedReview.setId(2L);
+            unapprovedReview.setApproved(false);
+
+            Page<Review> reviewPage = new PageImpl<>(List.of(review, unapprovedReview));
+            when(reviewRepository.findByHotelId(1L, pageable)).thenReturn(reviewPage);
+            when(reviewMapper.toResponseDTO(any(Review.class))).thenReturn(responseDTO);
+
+            Page<ReviewResponseDTO> result = reviewService.getAllByHotel(1L, pageable);
+
+            assertNotNull(result);
+            assertEquals(2, result.getTotalElements());
+            verify(reviewRepository).findByHotelId(1L, pageable);
+        }
+
+        @Test
+        @DisplayName("Should get all reviews by room including unapproved")
+        void shouldGetAllByRoom() {
+            Review unapprovedReview = new Review();
+            unapprovedReview.setId(2L);
+            unapprovedReview.setApproved(false);
+
+            Page<Review> reviewPage = new PageImpl<>(List.of(review, unapprovedReview));
+            when(reviewRepository.findByRoomId(1L, pageable)).thenReturn(reviewPage);
+            when(reviewMapper.toResponseDTO(any(Review.class))).thenReturn(responseDTO);
+
+            Page<ReviewResponseDTO> result = reviewService.getAllByRoom(1L, pageable);
+
+            assertNotNull(result);
+            assertEquals(2, result.getTotalElements());
+            verify(reviewRepository).findByRoomId(1L, pageable);
+        }
+
+        @Test
+        @DisplayName("Should get reviews by user paginated")
+        void shouldGetByUserPaginated() {
+            Page<Review> reviewPage = new PageImpl<>(List.of(review));
+            when(reviewRepository.findByUserId(1L, pageable)).thenReturn(reviewPage);
+            when(reviewMapper.toResponseDTO(review)).thenReturn(responseDTO);
+
+            Page<ReviewResponseDTO> result = reviewService.getByUserPaginated(1L, pageable);
+
+            assertNotNull(result);
+            assertEquals(1, result.getTotalElements());
+            verify(reviewRepository).findByUserId(1L, pageable);
+        }
+    }
+
+    @Nested
+    @DisplayName("Count Approved Reviews Tests")
+    class CountApprovedTests {
+
+        @Test
+        @DisplayName("Should count approved reviews by hotel")
+        void shouldCountApprovedByHotel() {
+            when(reviewRepository.countApprovedReviewsByHotelId(1L)).thenReturn(5L);
+
+            Long result = reviewService.countApprovedByHotel(1L);
+
+            assertEquals(5L, result);
+            verify(reviewRepository).countApprovedReviewsByHotelId(1L);
+        }
+
+        @Test
+        @DisplayName("Should count approved reviews by room")
+        void shouldCountApprovedByRoom() {
+            when(reviewRepository.countApprovedReviewsByRoomId(1L)).thenReturn(3L);
+
+            Long result = reviewService.countApprovedByRoom(1L);
+
+            assertEquals(3L, result);
+            verify(reviewRepository).countApprovedReviewsByRoomId(1L);
+        }
+
+        @Test
+        @DisplayName("Should return zero when no approved reviews for hotel")
+        void shouldReturnZeroWhenNoApprovedReviewsForHotel() {
+            when(reviewRepository.countApprovedReviewsByHotelId(999L)).thenReturn(0L);
+
+            Long result = reviewService.countApprovedByHotel(999L);
+
+            assertEquals(0L, result);
+        }
+
+        @Test
+        @DisplayName("Should return zero when no approved reviews for room")
+        void shouldReturnZeroWhenNoApprovedReviewsForRoom() {
+            when(reviewRepository.countApprovedReviewsByRoomId(999L)).thenReturn(0L);
+
+            Long result = reviewService.countApprovedByRoom(999L);
+
+            assertEquals(0L, result);
+        }
+    }
 }

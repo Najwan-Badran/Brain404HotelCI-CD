@@ -13,4 +13,6 @@ public interface RoomTypeServiceInt {
     RoomTypeResponseDTO update(Long id, RoomTypeRequestDTO dto);
 
     void deleteById(Long id);
+
+    RoomTypeResponseDTO findByName(String name);
 }

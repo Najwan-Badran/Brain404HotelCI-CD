@@ -33,4 +33,16 @@ public interface ReviewService {
     Page<ReviewResponseDTO> getByRoom(Long roomId, Pageable pageable);
 
     Double getAverageRatingByRoom(Long roomId);
+
+    // Admin methods - includes all reviews (approved and unapproved)
+    Page<ReviewResponseDTO> getAllByHotel(Long hotelId, Pageable pageable);
+
+    Page<ReviewResponseDTO> getAllByRoom(Long roomId, Pageable pageable);
+
+    Page<ReviewResponseDTO> getByUserPaginated(Long userId, Pageable pageable);
+
+    // Statistics
+    Long countApprovedByHotel(Long hotelId);
+
+    Long countApprovedByRoom(Long roomId);
 }

@@ -30,4 +30,9 @@ public interface RoomServiceInt {
     List<RoomResponseDTO> findAvailableRoomsByHotel(Long hotelId, LocalDate checkInDate, LocalDate checkOutDate, Integer guests);
 
     List<RoomResponseDTO> searchRooms(RoomSearchRequestDTO searchRequest);
+
+    // Lookup methods
+    RoomResponseDTO findByRoomNumber(String roomNumber);
+
+    List<RoomResponseDTO> findActiveByHotelId(Long hotelId);
 }

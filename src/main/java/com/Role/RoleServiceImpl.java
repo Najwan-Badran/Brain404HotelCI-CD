@@ -82,6 +82,15 @@ public class RoleServiceImpl implements RoleService {
         roleRepository.delete(role);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public RoleResponseDTO getByName(String name) {
+        String normalizedName = normalizeRoleName(name);
+        Role role = roleRepository.findByName(normalizedName)
+                .orElseThrow(() -> new RoleNotFoundException("Role not found with name: " + normalizedName));
+        return RoleMapper.toResponse(role);
+    }
+
     private String normalizeRoleName(String input) {
         if (input == null || input.isBlank()) {
             throw new RoleBadRequestException("Role name cannot be empty");

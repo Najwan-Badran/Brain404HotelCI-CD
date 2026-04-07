@@ -14,4 +14,6 @@ public interface RoleService {
     RoleResponseDTO update(Long id, RoleRequestDTO dto);
 
     void delete(Long id);
+
+    RoleResponseDTO getByName(String name);
 }

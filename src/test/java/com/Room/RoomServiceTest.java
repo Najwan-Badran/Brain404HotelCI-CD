@@ -197,6 +197,46 @@ class RoomServiceTest {
             assertNotNull(result);
             assertEquals(1, result.getTotalElements());
         }
+
+        @Test
+        @DisplayName("Should find room by room number")
+        void shouldFindByRoomNumber() {
+            when(roomRepository.findByRoomNumber("101")).thenReturn(Optional.of(room));
+
+            RoomResponseDTO result = roomService.findByRoomNumber("101");
+
+            assertNotNull(result);
+            assertEquals("101", result.getRoomNumber());
+        }
+
+        @Test
+        @DisplayName("Should throw exception when room number not found")
+        void shouldThrowExceptionWhenRoomNumberNotFound() {
+            when(roomRepository.findByRoomNumber("999")).thenReturn(Optional.empty());
+
+            assertThrows(RoomNotFoundException.class, () -> roomService.findByRoomNumber("999"));
+        }
+
+        @Test
+        @DisplayName("Should find active rooms by hotel id")
+        void shouldFindActiveByHotelId() {
+            room.setActive(true);
+            when(hotelRepository.existsById(1L)).thenReturn(true);
+            when(roomRepository.findByHotelIdAndActiveTrue(1L)).thenReturn(List.of(room));
+
+            List<RoomResponseDTO> result = roomService.findActiveByHotelId(1L);
+
+            assertNotNull(result);
+            assertEquals(1, result.size());
+        }
+
+        @Test
+        @DisplayName("Should throw exception when hotel not found for active rooms")
+        void shouldThrowExceptionWhenHotelNotFoundForActiveRooms() {
+            when(hotelRepository.existsById(999L)).thenReturn(false);
+
+            assertThrows(HotelNotFoundException.class, () -> roomService.findActiveByHotelId(999L));
+        }
     }
 
     @Nested

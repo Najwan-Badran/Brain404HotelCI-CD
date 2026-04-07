@@ -49,4 +49,10 @@ public class RoleController {
         roleService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/name/{name}")
+    public ResponseEntity<RoleResponseDTO> getByName(@PathVariable String name) {
+        return ResponseEntity.ok(roleService.getByName(name));
+    }
 }

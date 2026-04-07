@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,11 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Data initializer that seeds default roles and admin user on application startup.
- * Disabled for test profile as tests manage their own test data.
- */
 @Component
+@Order(1)
 @DependsOn("entityManagerFactory")
 @Profile("!test")
 public class DataInitializer implements CommandLineRunner {

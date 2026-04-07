@@ -181,6 +181,36 @@ class RoleServiceTest {
             assertNotNull(result);
             assertEquals(0, result.getTotalElements());
         }
+
+        @Test
+        @DisplayName("Should get role by name")
+        void shouldGetByName() {
+            when(roleRepository.findByName("ROLE_USER")).thenReturn(Optional.of(role));
+
+            RoleResponseDTO result = roleService.getByName("USER");
+
+            assertNotNull(result);
+            assertEquals("ROLE_USER", result.getName());
+        }
+
+        @Test
+        @DisplayName("Should get role by name with ROLE_ prefix")
+        void shouldGetByNameWithPrefix() {
+            when(roleRepository.findByName("ROLE_ADMIN")).thenReturn(Optional.of(role));
+
+            RoleResponseDTO result = roleService.getByName("ROLE_ADMIN");
+
+            assertNotNull(result);
+            verify(roleRepository).findByName("ROLE_ADMIN");
+        }
+
+        @Test
+        @DisplayName("Should throw exception when role name not found")
+        void shouldThrowExceptionWhenNameNotFound() {
+            when(roleRepository.findByName("ROLE_UNKNOWN")).thenReturn(Optional.empty());
+
+            assertThrows(RoleNotFoundException.class, () -> roleService.getByName("UNKNOWN"));
+        }
     }
 
     @Nested

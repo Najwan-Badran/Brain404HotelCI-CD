@@ -86,4 +86,9 @@ public class ImageServiceImpl implements ImageService {
         Image updated = imageRepository.save(image);
         return imageMapper.toResponseDTO(updated);
     }
+
+    @Override
+    public void deleteByEntity(ImageEntityType entityType, Long entityId) {
+        imageRepository.deleteByEntityTypeAndEntityId(entityType, entityId);
+    }
 }
