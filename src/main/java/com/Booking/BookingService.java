@@ -10,6 +10,8 @@ public interface BookingService {
     // CRUD
     BookingResponseDTO create(BookingRequestDTO requestDTO, Long userId);
 
+    Page<BookingResponseDTO> getAll(Pageable pageable);
+
     BookingResponseDTO getById(Long id);
 
     BookingResponseDTO getByConfirmationNumber(String confirmationNumber);

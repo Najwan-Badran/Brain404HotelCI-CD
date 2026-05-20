@@ -8,7 +8,7 @@ import com.Room.RoomRepository;
 import com.User.User;
 import com.User.UserNotFoundException;
 import com.User.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,6 +40,13 @@ public class BookingServiceImpl implements BookingService {
         this.roomAmenityRepository = roomAmenityRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BookingResponseDTO> getAll(Pageable pageable) {
+        return bookingRepository.findAll(pageable)
+                .map(bookingMapper::toResponseDTO);
     }
 
     @Override

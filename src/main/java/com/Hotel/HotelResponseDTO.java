@@ -11,12 +11,15 @@ public class HotelResponseDTO {
     private String country;
     private String phone;
     private String email;
+    private String description;
+    private Integer starRating;
     private Integer numberOfFloors;
 
     private Set<String> amenities;
 
     public HotelResponseDTO(Long id, String name, String address, String city, String country,
-                            String phone, String email, Integer numberOfFloors, Set<String> amenities) {
+                            String phone, String email, String description, Integer starRating,
+                            Integer numberOfFloors, Set<String> amenities) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -24,6 +27,8 @@ public class HotelResponseDTO {
         this.country = country;
         this.phone = phone;
         this.email = email;
+        this.description = description;
+        this.starRating = starRating;
         this.numberOfFloors = numberOfFloors;
         this.amenities = amenities;
     }
@@ -54,6 +59,14 @@ public class HotelResponseDTO {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Integer getStarRating() {
+        return starRating;
     }
 
     public Integer getNumberOfFloors() {

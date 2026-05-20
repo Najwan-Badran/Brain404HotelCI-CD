@@ -10,6 +10,7 @@ public class PaymentMapper {
                                    Booking booking) {
         Payment payment = new Payment();
         payment.setAmount(dto.getAmount());
+        payment.setPaymentMethod(dto.getPaymentMethod());
         payment.setStatus(PaymentStatus.PENDING);
         payment.setCreatedAt(LocalDateTime.now());
         payment.setBooking(booking);
@@ -21,6 +22,7 @@ public class PaymentMapper {
                 payment.getId(),
                 payment.getAmount(),
                 payment.getStatus(),
+                payment.getPaymentMethod(),
                 payment.getCreatedAt(),
                 payment.getBooking().getId()
         );

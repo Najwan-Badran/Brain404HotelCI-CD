@@ -12,9 +12,11 @@ import java.util.Optional;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-    Optional<Room> findByRoomNumber(String roomNumber);
+    // UPDATED: Now searches within a specific hotel to prevent NonUniqueResultException
+    Optional<Room> findByHotelIdAndRoomNumber(Long hotelId, String roomNumber);
 
-    boolean existsByRoomNumber(String roomNumber);
+    // UPDATED: Ensures we only check for duplicates within the same hotel
+    boolean existsByHotelIdAndRoomNumber(Long hotelId, String roomNumber);
 
     List<Room> findByHotelId(Long hotelId);
 

@@ -31,8 +31,8 @@ public interface RoomServiceInt {
 
     List<RoomResponseDTO> searchRooms(RoomSearchRequestDTO searchRequest);
 
-    // Lookup methods
-    RoomResponseDTO findByRoomNumber(String roomNumber);
+    // UPDATED: Require hotelId for lookup
+    RoomResponseDTO findByHotelAndRoomNumber(Long hotelId, String roomNumber);
 
     List<RoomResponseDTO> findActiveByHotelId(Long hotelId);
 }

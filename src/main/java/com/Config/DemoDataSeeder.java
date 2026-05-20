@@ -12,6 +12,9 @@ import com.BookingGuest.BookingGuest;
 import com.BookingGuest.BookingGuestRepository;
 import com.Hotel.Hotel;
 import com.Hotel.HotelRepository;
+import com.Image.Image;
+import com.Image.ImageEntityType;
+import com.Image.ImageRepository;
 import com.Payment.Payment;
 import com.Payment.PaymentMethod;
 import com.Payment.PaymentRepository;
@@ -22,6 +25,8 @@ import com.Role.Role;
 import com.Role.RoleRepository;
 import com.Room.Room;
 import com.Room.RoomRepository;
+import com.RoomAvailability.RoomAvailability;
+import com.RoomAvailability.RoomAvailabilityRepository;
 import com.RoomType.RoomType;
 import com.RoomType.RoomTypeRepository;
 import com.User.User;
@@ -65,6 +70,8 @@ public class DemoDataSeeder implements CommandLineRunner {
     private final Random random = new Random(42);
     private final AtomicLong bookingCounter = new AtomicLong(System.currentTimeMillis());
     private final AtomicLong paymentCounter = new AtomicLong(System.currentTimeMillis());
+    private final RoomAvailabilityRepository roomAvailabilityRepository;
+    private final ImageRepository imageRepository;
 
     public DemoDataSeeder(AddressRepository addressRepository,
                           AmenityRepository amenityRepository,
@@ -77,7 +84,9 @@ public class DemoDataSeeder implements CommandLineRunner {
                           BookingGuestRepository bookingGuestRepository,
                           PaymentRepository paymentRepository,
                           ReviewRepository reviewRepository,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          RoomAvailabilityRepository roomAvailabilityRepository,
+                          ImageRepository imageRepository) {
         this.addressRepository = addressRepository;
         this.amenityRepository = amenityRepository;
         this.roomTypeRepository = roomTypeRepository;
@@ -90,6 +99,8 @@ public class DemoDataSeeder implements CommandLineRunner {
         this.paymentRepository = paymentRepository;
         this.reviewRepository = reviewRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roomAvailabilityRepository = roomAvailabilityRepository;
+        this.imageRepository = imageRepository;
     }
 
     @Override
@@ -108,11 +119,13 @@ public class DemoDataSeeder implements CommandLineRunner {
         List<RoomType> roomTypes = seedRoomTypes();
         List<Hotel> hotels = seedHotels(amenities, hotelAddresses);
         List<Room> rooms = seedRooms(hotels, roomTypes, amenities);
+        seedRoomAvailability(rooms);
         List<User> users = seedUsers(userAddresses);
         List<Booking> bookings = seedBookings(users, rooms);
         seedBookingGuests(bookings);
         seedPayments(bookings);
         seedReviews(users, hotels, bookings);
+        seedImages(hotels, rooms, roomTypes);
 
         log.info("Demo data seeding completed");
     }
@@ -149,6 +162,89 @@ public class DemoDataSeeder implements CommandLineRunner {
 
         log.info("Created {} hotel addresses", addresses.size());
         return addresses;
+    }
+
+    private void seedImages(List<Hotel> hotels,
+                            List<Room> rooms,
+                            List<RoomType> roomTypes) {
+
+        int created = 0;
+
+        // -------------------
+        // HOTEL IMAGES
+        // -------------------
+        for (Hotel hotel : hotels) {
+
+            int imageCount = 3 + random.nextInt(4); // 3–6 images
+
+            for (int i = 0; i < imageCount; i++) {
+                Image img = new Image();
+
+                img.setEntityType(ImageEntityType.HOTEL);
+                img.setEntityId(hotel.getId());
+                img.setPrimary(i == 0);
+                img.setSortOrder(i);
+
+                img.setUrl("https://picsum.photos/seed/hotel-" + hotel.getId() + "-" + i + "/1200/800");
+                img.setAltText(hotel.getName() + " image " + (i + 1));
+                img.setFileName("hotel_" + hotel.getId() + "_" + i + ".jpg");
+                img.setContentType("image/jpeg");
+                img.setFileSize(500000L + random.nextInt(1500000));
+
+                imageRepository.save(img);
+                created++;
+            }
+        }
+
+        // -------------------
+        // ROOM IMAGES
+        // -------------------
+        for (Room room : rooms) {
+
+            int imageCount = 2 + random.nextInt(3); // 2–4 images
+
+            for (int i = 0; i < imageCount; i++) {
+                Image img = new Image();
+
+                img.setEntityType(ImageEntityType.ROOM);
+                img.setEntityId(room.getId());
+                img.setPrimary(i == 0);
+                img.setSortOrder(i);
+
+                img.setUrl("https://picsum.photos/seed/room-" + room.getId() + "-" + i + "/1000/700");
+                img.setAltText("Room " + room.getRoomNumber() + " image " + (i + 1));
+                img.setFileName("room_" + room.getId() + "_" + i + ".jpg");
+                img.setContentType("image/jpeg");
+                img.setFileSize(300000L + random.nextInt(1000000));
+
+                imageRepository.save(img);
+                created++;
+            }
+        }
+
+        // -------------------
+        // ROOM TYPE IMAGES
+        // -------------------
+        for (RoomType type : roomTypes) {
+
+            Image img = new Image();
+
+            img.setEntityType(ImageEntityType.ROOM_TYPE);
+            img.setEntityId(type.getId());
+            img.setPrimary(true);
+            img.setSortOrder(0);
+
+            img.setUrl("https://picsum.photos/seed/roomtype-" + type.getId() + "/1200/800");
+            img.setAltText(type.getName());
+            img.setFileName("roomtype_" + type.getId() + ".jpg");
+            img.setContentType("image/jpeg");
+            img.setFileSize(800000L + random.nextInt(1200000));
+
+            imageRepository.save(img);
+            created++;
+        }
+
+        log.info("Created {} images", created);
     }
 
     private List<Address> seedUserAddresses() {
@@ -370,6 +466,58 @@ public class DemoDataSeeder implements CommandLineRunner {
 
         log.info("Created {} rooms", rooms.size());
         return rooms;
+    }
+
+    private void seedRoomAvailability(List<Room> rooms) {
+
+        if (rooms.isEmpty()) {
+            log.warn("No rooms found, skipping room availability seeding");
+            return;
+        }
+
+        LocalDate startDate = LocalDate.now();
+        int daysToGenerate = 60; // adjust as needed
+
+        int created = 0;
+
+        for (Room room : rooms) {
+
+            BigDecimal basePrice = room.getRoomType()
+                    .getPricePerNight()
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            for (int i = 0; i < daysToGenerate; i++) {
+
+                LocalDate date = startDate.plusDays(i);
+
+                // add small dynamic pricing variation (-10% to +30%)
+                double multiplier = 0.9 + (random.nextDouble() * 0.4);
+                BigDecimal price = basePrice
+                        .multiply(BigDecimal.valueOf(multiplier))
+                        .setScale(2, RoundingMode.HALF_UP);
+
+                boolean available = random.nextDouble() > 0.1; // 90% available
+
+                RoomAvailability ra = new RoomAvailability();
+                ra.setRoom(room);
+                ra.setDate(date);
+                ra.setAvailable(available);
+                ra.setPrice(price);
+
+                // optional logic
+                ra.setMinStay(1);
+                ra.setMaxStay(14);
+
+                if (!available) {
+                    ra.setNotes("Fully booked / blocked date");
+                }
+
+                roomAvailabilityRepository.save(ra);
+                created++;
+            }
+        }
+
+        log.info("Created {} room availability records", created);
     }
 
     private List<User> seedUsers(List<Address> userAddresses) {

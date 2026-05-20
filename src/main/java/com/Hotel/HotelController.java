@@ -33,13 +33,12 @@ public class HotelController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
+    // @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public HotelResponseDTO getById(@PathVariable Long id) {
         return hotelService.getById(id);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public PagedResponse<HotelResponseDTO> getAll(Pageable pageable) {
         Page<HotelResponseDTO> page = hotelService.getAll(pageable);
         return PagedResponse.from(page);
@@ -85,7 +84,6 @@ public class HotelController {
 
     // USER + ADMIN (active only)
     @GetMapping("/{hotelId}/amenities")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public PagedResponse<AmenityResponseDTO> getHotelAmenitiesActive(@PathVariable Long hotelId,
                                                                      Pageable pageable) {
         Page<AmenityResponseDTO> page = hotelService.getHotelAmenitiesActive(hotelId, pageable);
@@ -115,7 +113,6 @@ public class HotelController {
     // ==========================================================
 
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public PagedResponse<HotelResponseDTO> searchHotels(
             @RequestParam(required = false) String city,
             @RequestParam(required = false) String country,
@@ -130,7 +127,6 @@ public class HotelController {
     // ==========================================================
 
     @GetMapping("/{hotelId}/rooms")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public List<RoomResponseDTO> getHotelRooms(@PathVariable Long hotelId) {
         return hotelService.getHotelRooms(hotelId);
     }
@@ -150,7 +146,6 @@ public class HotelController {
     // ==========================================================
 
     @GetMapping("/{hotelId}/room-types")
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     public List<RoomTypeResponseDTO> getHotelRoomTypes(@PathVariable Long hotelId) {
         return hotelService.getHotelRoomTypes(hotelId);
     }

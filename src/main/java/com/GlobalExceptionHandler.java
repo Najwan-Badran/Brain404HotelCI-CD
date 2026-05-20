@@ -255,6 +255,22 @@ public class GlobalExceptionHandler {
     }
 
     // ==========================================================
+    // 403 - FORBIDDEN (Custom SecurityException)
+    // ==========================================================
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<ApiError> handleSecurityException(SecurityException ex,
+                                                            HttpServletRequest request) {
+
+        log.warn("Security exception at {}: {}", request.getRequestURI(), ex.getMessage());
+
+        return buildResponse(
+                ex.getMessage(),
+                HttpStatus.FORBIDDEN,
+                request
+        );
+    }
+
+    // ==========================================================
     // 500 - FALLBACK
     // ==========================================================
     @ExceptionHandler(Exception.class)

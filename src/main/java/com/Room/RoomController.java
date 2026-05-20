@@ -147,12 +147,12 @@ public class RoomController {
     }
 
     /**
-     * Get room by room number
+     * Get room by room number within a specific hotel
      */
-    @GetMapping("/number/{roomNumber}")
-    @Operation(summary = "Get room by number", description = "Retrieve a room by its room number")
-    public RoomResponseDTO getByRoomNumber(@PathVariable String roomNumber) {
-        return roomService.findByRoomNumber(roomNumber);
+    @GetMapping("/hotel/{hotelId}/number/{roomNumber}")
+    @Operation(summary = "Get room by number", description = "Retrieve a room in a specific hotel by its room number")
+    public RoomResponseDTO getByRoomNumber(@PathVariable Long hotelId, @PathVariable String roomNumber) {
+        return roomService.findByHotelAndRoomNumber(hotelId, roomNumber);
     }
 
     /**

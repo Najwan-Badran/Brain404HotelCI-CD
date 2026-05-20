@@ -1,8 +1,6 @@
 package com.Hotel;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public class HotelRequestDTO {
 
@@ -18,6 +16,13 @@ public class HotelRequestDTO {
     private String country;
     private String phone;
     private String email;
+
+    @Size(max = 2000, message = "Description must not exceed 2000 characters")
+    private String description;
+
+    @Min(value = 1, message = "Star rating must be at least 1")
+    @Max(value = 5, message = "Star rating must not exceed 5")
+    private Integer starRating;
 
     @PositiveOrZero(message = "Number of floors must be zero or positive")
     private Integer numberOfFloors;
@@ -68,6 +73,22 @@ public class HotelRequestDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getStarRating() {
+        return starRating;
+    }
+
+    public void setStarRating(Integer starRating) {
+        this.starRating = starRating;
     }
 
     public Integer getNumberOfFloors() {

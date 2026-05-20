@@ -190,4 +190,31 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.findByUserId(userId, pageable)
                 .map(PaymentMapper::toDTO);
     }
+
+    // ==========================================================
+    // Added for Admin Global/Status Queries
+    // ==========================================================
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PaymentResponseDTO> getAll(Pageable pageable) {
+        return paymentRepository.findAll(pageable)
+                .map(PaymentMapper::toDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PaymentResponseDTO> findByStatus(String status, Pageable pageable) {
+        PaymentStatus paymentStatus;
+        try {
+            // Convert the String from the URL to your Java Enum
+            paymentStatus = PaymentStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new PaymentBadRequestException("Invalid payment status: " + status);
+        }
+
+        return paymentRepository.findByStatus(paymentStatus, pageable)
+                .map(PaymentMapper::toDTO);
+    }
+
 }

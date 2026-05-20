@@ -116,6 +116,9 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
 
+                        // Public endpoints - Health check (ALB)
+                        .requestMatchers("/actuator/health").permitAll()
+
                         // Public endpoints - Authentication
                         .requestMatchers("/api/auth/**").permitAll()
 
@@ -125,6 +128,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/room-types/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/amenities/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/addresses/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/images/**").permitAll()
 
                         // All other requests require authentication
                         .anyRequest().authenticated()

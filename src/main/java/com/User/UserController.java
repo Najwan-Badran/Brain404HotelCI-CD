@@ -3,6 +3,7 @@ package com.User;
 import com.Booking.BookingMapper;
 import com.Booking.BookingRepository;
 import com.Booking.BookingResponseDTO;
+import com.Booking.BookingService;
 import com.Payment.PaymentMapper;
 import com.Payment.PaymentRepository;
 import com.Payment.PaymentResponseDTO;
@@ -31,6 +32,7 @@ public class UserController {
     private final PaymentRepository paymentRepository;
     private final BookingMapper bookingMapper;
     private final ReviewMapper reviewMapper;
+    private final BookingService bookingService;
 
     public UserController(UserService userService,
                           UserRepository userRepository,
@@ -38,7 +40,8 @@ public class UserController {
                           ReviewRepository reviewRepository,
                           PaymentRepository paymentRepository,
                           BookingMapper bookingMapper,
-                          ReviewMapper reviewMapper) {
+                          ReviewMapper reviewMapper,
+                          BookingService bookingService) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
@@ -46,6 +49,7 @@ public class UserController {
         this.paymentRepository = paymentRepository;
         this.bookingMapper = bookingMapper;
         this.reviewMapper = reviewMapper;
+        this.bookingService = bookingService;
     }
 
 
@@ -62,6 +66,8 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getById(id));
     }
+
+
 
     // POST /users
     @PreAuthorize("hasRole('ADMIN')")
@@ -134,14 +140,17 @@ public class UserController {
         return ResponseEntity.ok(userService.getById(userId));
     }
 
-    // GET /users/me/bookings - Get current user's bookings
+    // GET /users/me/bookings
     @GetMapping("/me/bookings")
     public ResponseEntity<Page<BookingResponseDTO>> getMyBookings(
             Authentication authentication,
             @PageableDefault(size = 10) Pageable pageable) {
+
         Long userId = getCurrentUserId(authentication);
-        Page<BookingResponseDTO> bookings = bookingRepository.findByUserId(userId, pageable)
-                .map(bookingMapper::toResponseDTO);
+
+        // Let the @Transactional Service handle the heavy lifting!
+        Page<BookingResponseDTO> bookings = bookingService.getByUserId(userId, pageable);
+
         return ResponseEntity.ok(bookings);
     }
 

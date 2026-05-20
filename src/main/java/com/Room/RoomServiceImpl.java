@@ -47,8 +47,8 @@ public class RoomServiceImpl implements RoomServiceInt {
     }
 
     public RoomResponseDTO create(RoomRequestDTO dto) {
-
-        if (roomRepository.existsByRoomNumber(dto.getRoomNumber())) {
+        // UPDATED: Only throw exception if the room number exists in THIS specific hotel
+        if (roomRepository.existsByHotelIdAndRoomNumber(dto.getHotelId(), dto.getRoomNumber())) {
             throw new RoomAlreadyExistsException(dto.getRoomNumber());
         }
 
@@ -89,17 +89,13 @@ public class RoomServiceImpl implements RoomServiceInt {
 
     @Override
     public RoomResponseDTO assignRoomType(Long roomId, Long roomTypeId) {
-        // Fetch room
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException(roomId));
 
-        // Fetch room type
         RoomType roomType = roomTypeRepository.findById(roomTypeId)
                 .orElseThrow(() -> new RoomTypeNotFoundException(roomTypeId));
 
-        // Assign
         room.setRoomType(roomType);
-
         Room updated = roomRepository.save(room);
 
         return RoomMapper.toDto(updated);
@@ -173,7 +169,6 @@ public class RoomServiceImpl implements RoomServiceInt {
 
         return rooms.stream()
                 .filter(room -> {
-                    // Filter by price range
                     if (searchRequest.getMinPrice() != null &&
                             room.getRoomType().getPricePerNight().compareTo(searchRequest.getMinPrice()) < 0) {
                         return false;
@@ -182,13 +177,11 @@ public class RoomServiceImpl implements RoomServiceInt {
                             room.getRoomType().getPricePerNight().compareTo(searchRequest.getMaxPrice()) > 0) {
                         return false;
                     }
-                    // Filter by room type name
                     if (searchRequest.getRoomTypeName() != null &&
                             !room.getRoomType().getName().toLowerCase()
                                     .contains(searchRequest.getRoomTypeName().toLowerCase())) {
                         return false;
                     }
-                    // Filter by amenity
                     if (searchRequest.getAmenity() != null && !searchRequest.getAmenity().isBlank()) {
                         String amenityFilter = searchRequest.getAmenity().toLowerCase();
                         boolean hasAmenity = room.getAmenities().stream()
@@ -209,11 +202,12 @@ public class RoomServiceImpl implements RoomServiceInt {
         }
     }
 
+    // UPDATED: Now requires hotelId to fetch the correct room
     @Override
     @Transactional(readOnly = true)
-    public RoomResponseDTO findByRoomNumber(String roomNumber) {
-        Room room = roomRepository.findByRoomNumber(roomNumber)
-                .orElseThrow(() -> new RoomNotFoundException(roomNumber));
+    public RoomResponseDTO findByHotelAndRoomNumber(Long hotelId, String roomNumber) {
+        Room room = roomRepository.findByHotelIdAndRoomNumber(hotelId, roomNumber)
+                .orElseThrow(() -> new RoomNotFoundException("Room " + roomNumber + " not found in hotel " + hotelId));
         return RoomMapper.toDto(room);
     }
 

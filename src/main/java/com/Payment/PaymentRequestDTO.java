@@ -5,11 +5,15 @@ import java.math.BigDecimal;
 
 public class PaymentRequestDTO {
 
-    @NotNull
+    @NotNull(message = "Amount is required")
+    @DecimalMin(value = "0.01", message = "Amount must be greater than 0")
     private BigDecimal amount;
 
-    @NotNull
+    @NotNull(message = "Booking ID is required")
     private Long bookingId;
+
+    @NotNull(message = "Payment method is required")
+    private PaymentMethod paymentMethod;
 
     // getters & setters
     public BigDecimal getAmount() {
@@ -26,5 +30,13 @@ public class PaymentRequestDTO {
 
     public void setBookingId(Long bookingId) {
         this.bookingId = bookingId;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

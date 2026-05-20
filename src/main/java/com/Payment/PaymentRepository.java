@@ -18,4 +18,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
            ORDER BY p.createdAt DESC
            """)
     Page<Payment> findByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    Page<Payment> findByStatus(PaymentStatus status, Pageable pageable);
 }

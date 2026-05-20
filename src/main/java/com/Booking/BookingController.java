@@ -2,6 +2,7 @@ package com.Booking;
 
 import com.PagedResponse;
 import com.Security.CustomUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,27 @@ public class BookingController {
     // CRUD Operations
     // ==========================================================
 
+    // ==========================================================
+    // Global Admin Queries
+    // ==========================================================
+
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @Operation(summary = "Get bookings by user ID", description = "Retrieve a paginated list of bookings for a specific user (Admin/Manager only)")
+    public PagedResponse<BookingResponseDTO> getBookingsByUserId(@PathVariable Long userId,
+                                                                 Pageable pageable) {
+        Page<BookingResponseDTO> page = bookingService.getByUserId(userId, pageable);
+        return PagedResponse.from(page);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @Operation(summary = "Get all bookings", description = "Retrieve a paginated list of all bookings in the system (Admin/Manager only)")
+    public PagedResponse<BookingResponseDTO> getAllBookings(Pageable pageable) {
+        Page<BookingResponseDTO> page = bookingService.getAll(pageable);
+        return PagedResponse.from(page);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
@@ -35,13 +57,13 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public BookingResponseDTO getById(@PathVariable Long id) {
         return bookingService.getById(id);
     }
 
     @GetMapping("/confirmation/{confirmationNumber}")
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public BookingResponseDTO getByConfirmationNumber(@PathVariable String confirmationNumber) {
         return bookingService.getByConfirmationNumber(confirmationNumber);
     }
@@ -64,7 +86,7 @@ public class BookingController {
     // User Bookings
     // ==========================================================
 
-    @GetMapping
+    @GetMapping("/me")
     @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
     public PagedResponse<BookingResponseDTO> getMyBookings(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -156,4 +178,5 @@ public class BookingController {
     public BookingResponseDTO confirm(@PathVariable Long id) {
         return bookingService.confirm(id);
     }
+
 }

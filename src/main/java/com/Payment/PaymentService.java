@@ -33,4 +33,12 @@ public interface PaymentService {
     List<PaymentTransactionResponseDTO> getPaymentTransactions(Long paymentId);
 
     Page<PaymentResponseDTO> findByUserId(Long userId, Pageable pageable);
+
+    // ==========================================================
+    // Added for Admin Global/Status Queries
+    // ==========================================================
+
+    Page<PaymentResponseDTO> getAll(Pageable pageable);
+
+    Page<PaymentResponseDTO> findByStatus(String status, Pageable pageable);
 }

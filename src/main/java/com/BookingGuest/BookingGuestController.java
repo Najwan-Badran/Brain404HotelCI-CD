@@ -19,33 +19,33 @@ public class BookingGuestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public BookingGuestResponseDTO addGuest(@PathVariable Long bookingId,
                                             @Valid @RequestBody BookingGuestRequestDTO requestDTO) {
         return bookingGuestService.addGuest(bookingId, requestDTO);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public List<BookingGuestResponseDTO> getGuests(@PathVariable Long bookingId) {
         return bookingGuestService.getGuestsByBookingId(bookingId);
     }
 
     @GetMapping("/{guestId}")
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public BookingGuestResponseDTO getGuest(@PathVariable Long bookingId,
                                             @PathVariable Long guestId) {
         return bookingGuestService.getById(bookingId, guestId);
     }
 
     @GetMapping("/primary")
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public BookingGuestResponseDTO getPrimaryGuest(@PathVariable Long bookingId) {
         return bookingGuestService.getPrimaryGuest(bookingId);
     }
 
     @PutMapping("/{guestId}")
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public BookingGuestResponseDTO updateGuest(@PathVariable Long bookingId,
                                                @PathVariable Long guestId,
                                                @Valid @RequestBody BookingGuestRequestDTO requestDTO) {
@@ -54,7 +54,7 @@ public class BookingGuestController {
 
     @DeleteMapping("/{guestId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
     public void deleteGuest(@PathVariable Long bookingId,
                             @PathVariable Long guestId) {
         bookingGuestService.delete(bookingId, guestId);
