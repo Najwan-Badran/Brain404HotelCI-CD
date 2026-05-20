@@ -13,6 +13,7 @@ env:
   TASK_DEFINITION_FAMILY: hotel-task
   CONTAINER_NAME:         hotel-app
   ALB_HEALTH_URL:         http://hotel-alb-384312504.us-east-1.elb.amazonaws.com/actuator/health
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 # ─────────────────────────────────────────────────────────────────────────────
 # JOB 1 — Run unit tests (H2 in-memory, no real DB needed)
@@ -33,8 +34,11 @@ jobs:
           distribution: temurin
           cache: maven
 
+      - name: Make Maven Wrapper executable
+        run: chmod +x mvnw
+
       - name: Run tests (H2 profile)
-        run: mvn test -Dspring.profiles.active=test --batch-mode
+        run: ./mvnw test -Dspring.profiles.active=test --batch-mode
 
 # ─────────────────────────────────────────────────────────────────────────────
 # JOB 2 — Build JAR → Docker image → push to ECR → deploy to ECS
@@ -55,8 +59,11 @@ jobs:
           distribution: temurin
           cache: maven
 
+      - name: Make Maven Wrapper executable
+        run: chmod +x mvnw
+
       - name: Build JAR (tests already passed)
-        run: mvn package -DskipTests --batch-mode
+        run: ./mvnw package -DskipTests --batch-mode
 
       # ── AWS auth ────────────────────────────────────────────────────────────
       - name: Configure AWS credentials
