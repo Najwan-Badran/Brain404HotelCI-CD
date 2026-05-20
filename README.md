@@ -168,7 +168,7 @@ Create environment variables or update `application.properties`:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `DB_PASSWORD` | MySQL database password | `your_secure_password` |
+| `DB_PASSWORD` | MySQL database password | `123456` |
 | `JWT_SECRET` | JWT signing key (Base64 encoded, min 256 bits) | `YWJjZGVmZ2hpamts...` |
 
 ### Application Properties
@@ -177,7 +177,7 @@ Create environment variables or update `application.properties`:
 # Database Configuration
 spring.datasource.url=jdbc:mysql://localhost:3306/brain404hotel
 spring.datasource.username=root
-spring.datasource.password=${DB_PASSWORD}
+spring.datasource.password=${DB_PASSWORD:123456}
 
 # JPA Configuration
 spring.jpa.hibernate.ddl-auto=update
@@ -208,7 +208,7 @@ Create a MySQL database:
 
 ```sql
 CREATE DATABASE brain404hotel;
-CREATE USER 'hotel_user'@'localhost' IDENTIFIED BY 'your_password';
+CREATE USER 'hotel_user'@'localhost' IDENTIFIED BY '123456';
 GRANT ALL PRIVILEGES ON brain404hotel.* TO 'hotel_user'@'localhost';
 FLUSH PRIVILEGES;
 ```
@@ -217,13 +217,13 @@ FLUSH PRIVILEGES;
 
 **Linux/macOS:**
 ```bash
-export DB_PASSWORD=your_password
+export DB_PASSWORD=123456
 export JWT_SECRET=your_base64_encoded_secret_key
 ```
 
 **Windows:**
 ```cmd
-set DB_PASSWORD=your_password
+set DB_PASSWORD=123456
 set JWT_SECRET=your_base64_encoded_secret_key
 ```
 

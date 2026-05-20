@@ -87,7 +87,7 @@ Add these in **GitHub → Settings → Secrets and variables → Actions**:
 | `AWS_ACCESS_KEY_ID` | IAM user access key |
 | `AWS_SECRET_ACCESS_KEY` | IAM user secret key |
 
-> **DB credentials are NOT stored in GitHub.** They remain in AWS Secrets Manager and are injected into the ECS task at runtime — the pipeline only handles build + image push + redeploy.
+> `DB_PASSWORD` is set to `123456` in the GitHub Actions workflow and injected into the ECS task definition during deployment. AWS credentials remain in GitHub Secrets.
 
 ---
 

@@ -12,6 +12,7 @@ env:
   ECS_SERVICE:            hotel-service
   TASK_DEFINITION_FAMILY: hotel-task
   CONTAINER_NAME:         hotel-app
+  DB_PASSWORD:            123456
   ALB_HEALTH_URL:         http://hotel-alb-384312504.us-east-1.elb.amazonaws.com/actuator/health
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -99,6 +100,17 @@ jobs:
             --task-definition ${{ env.TASK_DEFINITION_FAMILY }} \
             --query taskDefinition \
             > task-definition.json
+
+      - name: Set ECS DB password environment variable
+        run: |
+          jq --arg container "$CONTAINER_NAME" --arg db_password "$DB_PASSWORD" '
+            .containerDefinitions |= map(
+              if .name == $container then
+                .environment = ((.environment // []) | map(select(.name != "DB_PASSWORD")) + [{"name":"DB_PASSWORD","value":$db_password}])
+              else . end
+            )
+          ' task-definition.json > task-definition.updated.json
+          mv task-definition.updated.json task-definition.json
 
       - name: Render updated task definition (new image)
         id: render-task-def
