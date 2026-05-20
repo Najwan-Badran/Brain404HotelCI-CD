@@ -1,4 +1,4 @@
-name: Deploy to ECS
+name: CI/CD — Build, Push & Deploy to ECS
 
 on:
   push:
@@ -8,25 +8,52 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: hotel-system
+  ECR_REGISTRY: 675294907141.dkr.ecr.us-east-1.amazonaws.com
 
 jobs:
-  deploy:
+
+  test:
+    name: Run Unit Tests
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java 21
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
 
-      - name: Build project
-        run: mvn clean package -DskipTests
+      - name: Make mvnw executable
+        run: chmod +x mvnw
 
-      - name: Configure AWS credentials
+      - name: Run tests
+        run: ./mvnw test
+
+  build-and-push:
+    name: Build, Push & Deploy
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
+      - name: Build project
+        run: ./mvnw clean package -DskipTests
+
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -39,8 +66,18 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t hotel-system .
-          docker tag hotel-system:latest 675294907141.dkr.ecr.us-east-1.amazonaws.com/hotel-system:latest
+          docker tag hotel-system:latest $ECR_REGISTRY/hotel-system:latest
 
-      - name: Push Docker image
+      - name: Push Docker image to ECR
         run: |
-          docker push 675294907141.dkr.ecr.us-east-1.amazonaws.com/hotel-system:latest
+          docker push $ECR_REGISTRY/hotel-system:latest
+
+  smoke-test:
+    name: Smoke Test
+    runs-on: ubuntu-latest
+    needs: build-and-push
+
+    steps:
+      - name: Health Check
+        run: |
+          curl -f http://hotel-alb-922070765.us-east-1.elb.amazonaws.com/actuator/health
